@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="stylesheet.css">
+  </head>
+
+  <body>
+
+  <nav class="navbar navbar-expand-custom navbar-mainbg">
+    <!--<button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"></button>
+    -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent" style="padding-left:3%">
+      <ul class="navbar-nav ml-auto">
+        <div class="hori-selector"><div class="left"></div><div class="right"></div></div>
+        <li class="nav-item active">
+          <a class="nav-link" onClick="ul(0)">Luftqualität</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" onClick="ul(1)">Strahlung</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" onClick="ul(2)">Thermik</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" onClick="ul(3)">Klimaanalyse</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" onClick="ul(4)">Schwellenwerte</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <dialog id="dialog">
+    <button id="close-dialog">Schließen</button>
+  </dialog>
+
+  <div class="content" id="content">
+
+
+    <!--      <div class="grid-container">-->
+<!--        <div class="grid-item"><div class="chart"><canvas id="myChart"></canvas></div></div>-->
+<!--        <div class="grid-item"><div class="chart"><canvas id="myChart2"></canvas><input type="date" id="temp_day_hour"></div></div>-->
+<!--      </div>-->
+    </div>
+
+  </body>
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script src="data.js"></script>
+  <script src="data2.js"></script>
+  <script src="thresholds.js"></script>
+
+  <script src="radiation.js"></script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+
+
+  <!--  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>-->
+<!--  <script src="https://npmcdn.com/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>-->
+
+
+  <script src="code.js"></script>
+  <script src="stacked.js"></script>
+</html>
