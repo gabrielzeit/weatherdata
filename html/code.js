@@ -343,14 +343,12 @@ async function ul(index) {
 function csvDownload(){
     var textToSave = ``;
 
-
-
-    console.log(analyseChartDataArr)
-
     if(analyseChartDataArr != null){
         analyseChartDataArr[0].forEach(element => textToSave += element + ",")
         textToSave = textToSave.slice(0, -1);
         textToSave += "\n";
+
+        console.log(analyseChartDataArr[0])
 
         for(let p = 0; p < analyseChartDataArr[1].length; p++){
             for(let x = 1; x < analyseChartDataArr.length; x++){
@@ -369,8 +367,15 @@ function csvDownload(){
             textToSave+="\n";
         }
     }
-    textToSave = textToSave.slice(0, -1);
-    saveAs(new Blob([textToSave], {type: "text/plain;charset=utf-8"}), "weatherdata.csv");
+
+    if(textToSave != ""){
+        textToSave = textToSave.slice(0, -1);
+        saveAs(new Blob([textToSave], {type: "text/plain;charset=utf-8"}), "weatherdata.csv");
+    }
+    else{
+        alert("Data is empty, please reload the page and redo the feature selection")
+    }
+
 }
 
 function setThresholdsInit(){
@@ -453,6 +458,7 @@ async function handleKlimaanalyseRequest(){
 
 function klimaanalyse_callmakeArr(json){
     var arraydata = jsonToArray(json)
+
     return arraydata;
 }
 
@@ -534,9 +540,8 @@ function time_span_klimaanalyse_span(startdate, enddate, data) {
         for(let x =0; x<processData[0].length; x++){
             daten[x].push({x: dateObj.getTime(), y: parseFloat(processData[x+1][i])});
         }
-
-
     }
+
 
     for (let x = 0; x < daten.length; x++) {
     //deduplicate and sort
@@ -558,7 +563,9 @@ function time_span_klimaanalyse_span(startdate, enddate, data) {
 
     myAnalyseChart.data.datasets = []
 
-    analyseChartDataArr = processData.slice(0)
+    // cloning array
+    analyseChartDataArr = [...processData]
+    analyseChartDataArr[0] = [...processData[0]] // i need this because somehow in processData there is no "date" in the labels, but it is weirdly visible when just looking at the labels
 
     for(let p = 0; p<daten.length; p++){
         if((p != dateIndex-1 || p != timeIndex-1)){
@@ -570,6 +577,30 @@ function time_span_klimaanalyse_span(startdate, enddate, data) {
             }
         }
     }
+
+    // configure zoom limits
+    // data prep to cut all arrays but the data (cut time and date and labels)
+    var minmaxArr = processData.slice(0);
+    minmaxArr.splice(minmaxArr[0].indexOf("date")+1,1);
+    minmaxArr[0].splice(minmaxArr[0].indexOf("date"),1);
+    minmaxArr.splice(minmaxArr[0].indexOf("timehhmmss")+1,1);
+    minmaxArr.splice(0,1)
+
+    // get the max value from all arrays
+    var maxArr=[]
+    var minArr=[]
+    minmaxArr.forEach(function(arr){
+        maxArr.push(Math.max(...arr));
+        minArr.push(Math.min(...arr));
+    });
+
+    //set x axis limits for zoom
+    myAnalyseChart.options.plugins.zoom.limits.x.min = daten[0][0].x;
+    myAnalyseChart.options.plugins.zoom.limits.x.max= daten[0][daten[0].length-1].x;
+
+    //set y axis limits for zoom
+    myAnalyseChart.options.plugins.zoom.limits.y.min = Math.min(...minArr);
+    myAnalyseChart.options.plugins.zoom.limits.y.max = Math.max(...maxArr);
 
     myAnalyseChart.update()
 }
@@ -617,6 +648,29 @@ function analyse_chart() {
                 legend: {
                     display: true
                 },
+
+
+
+                zoom: {
+                        limits:{
+                            x:{},
+                            y:{}
+                        },
+                        pan: {
+                          enabled: true,
+                          mode: 'xy',
+                          threshold: 5,
+                        },
+                        zoom: {
+                          wheel: {
+                            enabled: true
+                          },
+                          pinch: {
+                            enabled: true
+                          },
+                          mode: 'xy',
+                        },
+                      }
             },
             maintainAspectRatio: false,
         }
@@ -921,6 +975,7 @@ function jsonToArray(json){
     for (var val in dataJson[0]){
         newData[0].push(val)
     }
+
     //make array ?places? for each label
     for(let x = 0; x < newData[0].length; x++){
         newData.push([]);
