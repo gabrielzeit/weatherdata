@@ -141,10 +141,20 @@ function thresKlimaChart(zeit){
     var klimadata = []
     var labels = []
 
-    myAnalyseChart.data.datasets.forEach(function(dataset){
-        labels.push(dataset.label);
-        klimadata.push(dataset.data)
-    });
+    labels = analyseChartDataArr[0].slice(0)
+    labels.splice(labels.indexOf("date"),1)
+    labels.splice(labels.indexOf("timehhmmss"),1)
+
+    klimadata = analyseChartDataArr.slice(0)
+
+
+    klimadata.splice(klimadata[0].indexOf("date")+1,1);
+    klimadata[0].splice(klimadata[0].indexOf("date"),1);
+    klimadata.splice(klimadata[0].indexOf("timehhmmss")+1,1);
+    klimadata.splice(0,1)
+
+    // parse every item to float
+    klimadata = klimadata.map(subArray => subArray.map(item => parseFloat(item)));
 
     var thresklimadata = [];
 
@@ -159,17 +169,32 @@ function thresKlimaChart(zeit){
 
             if(tr[labels[labelnum]+ "min"] !=null || tr[labels[labelnum]+ "max"] !=null){
 
-                var minthres = tr[labels[labelnum] + "min"];
-                var maxthres = tr[labels[labelnum] + "max"];
+                var minthres = parseFloat(tr[labels[labelnum] + "min"]);
+                var maxthres = parseFloat(tr[labels[labelnum] + "max"]);
 
                 for(let x = 0; x < klimadata[0].length; x++){
-                    if(klimadata[labelnum][x].y >= maxthres){
+
+                    //exception for air pressure, where it is good (green) if it is over the thresholds
+                    if(labels[labelnum] == "press"){
+                        if(klimadata[labelnum][x] >= maxthres){
+                            down += 10;
+                        }
+                        if(klimadata[labelnum][x] < maxthres && klimadata[labelnum][x] > minthres){
+                            mid += 10;
+                        }
+                        if(klimadata[labelnum][x] <= minthres){
+                            up += 10;
+                        }
+                        continue;
+                    }
+
+                    if(klimadata[labelnum][x] >= maxthres){
                         up += 10;
                     }
-                    if(klimadata[labelnum][x].y < maxthres && klimadata[labelnum][x].y > minthres){
+                    if(klimadata[labelnum][x] < maxthres && klimadata[labelnum][x] > minthres){
                         mid += 10;
                     }
-                    if(klimadata[labelnum][x].y <= minthres){
+                    if(klimadata[labelnum][x] <= minthres){
                         down += 10;
                     }
                 }
@@ -910,13 +935,13 @@ function calcThresTher(zeit){
         // press
         if(tr.pressmin != null || tr.pressmax != null){
             if(parseFloat(value["press"])>=tr.pressmax){
-                thres.press.up += 10
+                thres.press.down += 10
             }
             if(parseFloat(value["press"])<tr.pressmax && parseFloat(value["press"])>tr.pressmin){
                 thres.press.mid += 10
             }
             if(parseFloat(value["press"])<=tr.pressmin){
-                thres.press.down += 10
+                thres.press.up += 10
             }
         }
 

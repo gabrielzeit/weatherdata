@@ -348,7 +348,6 @@ function csvDownload(){
         textToSave = textToSave.slice(0, -1);
         textToSave += "\n";
 
-        console.log(analyseChartDataArr[0])
 
         for(let p = 0; p < analyseChartDataArr[1].length; p++){
             for(let x = 1; x < analyseChartDataArr.length; x++){
@@ -566,6 +565,8 @@ function time_span_klimaanalyse_span(startdate, enddate, data) {
     // cloning array
     analyseChartDataArr = [...processData]
     analyseChartDataArr[0] = [...processData[0]] // i need this because somehow in processData there is no "date" in the labels, but it is weirdly visible when just looking at the labels
+
+
 
     for(let p = 0; p<daten.length; p++){
         if((p != dateIndex-1 || p != timeIndex-1)){
